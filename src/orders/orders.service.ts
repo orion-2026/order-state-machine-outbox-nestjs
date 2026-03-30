@@ -23,7 +23,7 @@ export class OrdersService {
     [OrderStatus.Refunded]: {},
   };
 
-  private readonly dbFile = config.databasePath;
+  private readonly dbFile = config.databaseConnectionString;
 
   private readStore(): Store {
     if (!existsSync(this.dbFile)) {

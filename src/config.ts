@@ -1,5 +1,5 @@
 export const config = {
-  port: Number(process.env.PORT ?? 3000),
+  port: Number(process.env.PORT ?? 8080),
   databaseProvider: process.env.DATABASE_PROVIDER ?? 'sqlite',
-  databasePath: process.env.DATABASE_PATH ?? 'order-demo.db',
+  databaseConnectionString: process.env.DATABASE_CONNECTION_STRING ?? 'order-demo.db',
 };

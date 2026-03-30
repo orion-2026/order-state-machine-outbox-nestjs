@@ -5,12 +5,21 @@ A NestJS implementation of the order status flow architecture lesson.
 ## What this demo shows
 - Order service as source of truth
 - Explicit state machine for allowed transitions
-- Service layer centralizing business rules
+- Application/service layer centralizing business rules
 - Outbox pattern for domain event recording
-- Very easy local run using a simple file-backed JSON store
+- Easy local run with a file-backed store
 - Docker support for quick demo startup
 
-## Endpoints
+## Order lifecycle
+```text
+PendingPayment -> Paid -> Fulfilling -> Shipped -> Completed
+PendingPayment -> Cancelled
+Paid -> Refunded
+Fulfilling -> Cancelled
+Shipped -> Refunded
+```
+
+## API surface
 - `GET /health`
 - `POST /api/orders`
 - `GET /api/orders`
@@ -19,6 +28,11 @@ A NestJS implementation of the order status flow architecture lesson.
 - `POST /api/orders/{id}/transitions`
 - `GET /api/outbox`
 - `POST /api/outbox/publish`
+
+## Environment variables
+- `PORT=8080`
+- `DATABASE_PROVIDER=sqlite`
+- `DATABASE_CONNECTION_STRING=order-demo.db`
 
 ## Run locally
 ```bash
@@ -30,13 +44,43 @@ npm run start
 Default local store:
 - `order-demo.db`
 
-Note:
-- This NestJS version keeps persistence intentionally simple with a file-backed JSON store so the project stays small and easy to understand.
-
 ## Run with Docker
 ```bash
 docker compose up --build
 ```
+
+Default URL:
+- API: `http://localhost:8080`
+
+## Example flow
+### Create order
+```bash
+curl -X POST http://localhost:8080/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{"customerId":"cust-001","productSku":"sku-demo-001","quantity":2}'
+```
+
+### Check allowed actions
+```bash
+curl http://localhost:8080/api/orders/{orderId}/actions
+```
+
+### Transition state
+```bash
+curl -X POST http://localhost:8080/api/orders/{orderId}/transitions \
+  -H "Content-Type: application/json" \
+  -d '{"action":"pay","reason":"Payment callback received"}'
+```
+
+### Read outbox
+```bash
+curl http://localhost:8080/api/outbox
+```
+
+## Notes
+- Uses a file-backed JSON store to keep the demo small and readable
+- Keeps the same API shape as the .NET and Go versions
+- Intentionally teaching-oriented, not production-complete
 
 ## Good next upgrades
 - Replace file store with PostgreSQL + Prisma or TypeORM

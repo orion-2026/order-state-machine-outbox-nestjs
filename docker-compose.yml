@@ -4,11 +4,11 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      PORT: 3000
+      PORT: 8080
       DATABASE_PROVIDER: sqlite
-      DATABASE_PATH: /data/order-demo.db
+      DATABASE_CONNECTION_STRING: /data/order-demo.db
     ports:
-      - "3000:3000"
+      - "8080:8080"
     volumes:
       - nest_data:/data
 
